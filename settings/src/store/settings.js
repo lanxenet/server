@@ -8,7 +8,11 @@ const mutations = {
 		state.serverData = data;
 	}
 };
-const getters = {}
+const getters = {
+	getServerData(state) {
+		return state.serverData;
+	}
+}
 const actions = {}
 
 export default {state, mutations, getters, actions};

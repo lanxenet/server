@@ -22,7 +22,7 @@
 
 				<!-- second action only two actions and no counter -->
 				<li v-else-if="item.utils.actions && item.utils.actions.length === 2 && !Number.isInteger(item.utils.counter)"
-					v-for="action in item.utils.actions"
+					v-for="action in item.utils.actions" :key="action.action"
 					class="app-navigation-entry-utils-menu-button">
 					<button :class="action.icon"></button>
 				</li>
@@ -50,9 +50,9 @@
 		<!-- edit entry -->
 		<div class="app-navigation-entry-edit" v-if="item.edit">
 			<form>
-				<input type="text" value="Folder entry">
-				<input type="submit" value="" class="icon-close">
-				<input type="submit" value="" class="icon-checkmark">
+				<input type="text" v-model="item.text">
+				<input type="submit" value="" class="icon-confirm">
+				<input type="submit" value="" class="icon-close" @click.stop.prevent="cancelEdit">
 			</form>
 		</div>
 
@@ -64,9 +64,9 @@
 </template>
 
 <script>
-import popoverMenu from '../popoverMenu'
-import ClickOutside from 'vue-click-outside'
-import Vue from 'vue'
+import popoverMenu from '../popoverMenu';
+import ClickOutside from 'vue-click-outside';
+import Vue from 'vue';
 
 export default {
 	name: 'navigationItem',
@@ -93,11 +93,16 @@ export default {
 			// if item.opened isn't set, Vue won't trigger view updates https://vuejs.org/v2/api/#Vue-set
 			// ternary is here to detect the undefined state of item.opened
 			Vue.set(this.item, 'opened', this.item.opened ? !this.item.opened : true);
+		},
+		cancelEdit () {
+			// remove the editing class
+			if (Array.isArray(this.item.classes))
+				this.item.classes = this.item.classes.filter(item => item !== 'editing');
 		}
 	},
 	mounted () {
 		// prevent click outside event with popupItem.
-		this.popupItem = this.$el
+		this.popupItem = this.$el;
 	},
 }
 </script>

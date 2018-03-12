@@ -1,76 +1,78 @@
 <template>
 	<div id="app">
-		<appNavigation :menu="menu" />
-		<div id="app-content">
-			<span :class="{ 'icon-loading': loading }">
-				<h1>Users</h1>
-				<button @click="addItem">+</button>
-				<div>{{users}}</div>
-			</span>
-		</div>
+		<app-navigation :menu="menu" />
+		<user-list :users="users" />
 	</div>
 </template>
 
 <script>
-import appNavigation from '../components/appNavigation'
+import appNavigation from '../components/appNavigation';
+import userList from '../components/userList';
+import Vue from 'vue';
 
 export default {
 	name: 'Users',
 	components: {
-		appNavigation
+		appNavigation,
+		userList
 	},
-	created: function () {
+	beforeMount() {
+		this.$store.commit('initGroups', this.$store.getters.getServerData.groups);
 		this.$store.dispatch('getUsers');
-	},
-	data: function () {
-		return {
-			menu: {
-				items: [
-					{
-						text: "Test folder",
-						href: "#test",
-						loading: false,
-						collapsible: true,
-						opened: true,
-						undo: {
-							action: "deleteAccount",
-							text: t('settings', 'Deleted Test')
-						},
-						edit: {
-							action: "editAccount",
-							text: "Test folder"
-						},
-						icon: "icon-settings-dark",
-						utils: {
-							counter: 156,
-							actions: [
-								{icon: "icon-add", text: "Add to group"},
-								{icon: "icon-delete", text: "Delete group"},
-								{icon: "icon-edit", text: "Edit group"}
-							]
-						},
-						children: [
-							{text: "Test1", href: "#test1"},
-							{text: "Test2", href: "#test2"}
-						]
-					}
-				]
-			}
-		}
 	},
 	computed: {
 		users() {
-			return this.$store.getters.getUsers
+			return this.$store.getters.getUsers;
 		},
 		loading() {
 			return Object.keys(this.users).length === 0;
+		},
+		menu() {
+			// Data provided php side
+			let groups = this.$store.getters.getGroups;
+			groups = Array.isArray(groups) ? groups : [];
+
+			// Map groups
+			groups = groups.map(group => {
+				let item = {};
+				item.id = group.id.replace(' ', '_');
+				item.classes = [];
+				item.href = '#'+group.id.replace(' ', '_');
+				item.text = group.name;
+				item.utils = {counter: group.usercount};
+				return item;
+			});
+
+			// Adjust data
+			if (groups[0].id === 'admin') {
+				groups[0].text = t('settings', 'Admins');}			// rename admin group
+			if (groups[1].id === '_disabledUsers') {
+				groups[1].text = t('settings', 'Disabled users');	// rename disabled group
+				if (groups[1].utils.counter === 0) {
+					groups.splice(1, 1);							// remove disabled if empty
+				}
+			}
+
+			// Add everyone group
+			groups.unshift({
+				id: '_everyoneGroup',
+				classes: ['active'],
+				href:'#_everyoneGroup',
+				text: t('settings', 'Everyone'),
+				utils: {counter: this.users.length}
+			});
+
+			// Return
+			return {
+				id: 'usergrouplist',
+				new: {
+					text: t('settings','New user'),
+					icon: 'icon-add'
+				},
+				items: groups
+			}
 		}
-	},
-	methods: {
-		addItem: function() {
-			this.menu.items[0].loading = !this.menu.items[0].loading;
-		}
-	},
+	}
 }
 </script>
 

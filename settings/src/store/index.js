@@ -7,10 +7,18 @@ Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 
+const mutations = {
+	API_FAILURE(state, error) {
+		console.log(state, error);
+	}
+}
+
 export default new Vuex.Store({
 	modules: {
 		users,
 		settings
 	},
-	strict: debug
+	strict: debug,
+
+	mutations
 })

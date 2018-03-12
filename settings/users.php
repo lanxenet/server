@@ -145,6 +145,7 @@ $serverData['userCount'] = count($groups) + count($adminGroup);
 // Settings
 $serverData['defaultQuota'] = $defaultQuota;
 $serverData['defaultQuotaIsUserDefined'] = $defaultQuotaIsUserDefined;
+$serverData['recoveryAdminEnabled'] = $recoveryAdminEnabled;
 
 // print template + vue + serve data
 $tmpl = new OC_Template('settings', 'settings', 'user');

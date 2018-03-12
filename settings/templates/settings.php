@@ -19,7 +19,7 @@
 script('settings', 'main');
 style('settings', 'settings');
 
-// Did
+// Did we have some data to inject ?
 if(is_array($_['serverData'])) {
 	$serverData = json_encode($_['serverData']);
 ?>
